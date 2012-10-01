@@ -1,0 +1,31 @@
+{
+	"question block": {
+		"question": {
+			"id": "xxxx"
+			"label": "xxxxxxxx"
+			"type": (	
+				"text": "blabla", 
+				"multi select": {
+					"options": [
+						{
+							"value": "mozart"
+						},
+						{
+							"value": "bach"
+						}
+					]
+				},
+				"single select": {
+					"options": [
+						{
+							"value": "mozart"
+						},
+						{
+							"value": "bach"
+						}
+					]
+				}
+			)			
+		}		
+	}
+}
