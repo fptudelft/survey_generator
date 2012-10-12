@@ -1,3 +1,9 @@
+$( document ).bind( "mobileinit", function() {
+    $.mobile.allowCrossDomainPages = true;
+	$.mobile.phonegapNavigationEnabled = true;
+});
+
+
 $(function() {
 
 	// Temporarily include the dataset in this file to prevent CORS issues when opening index.html in a local browser

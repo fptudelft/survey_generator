@@ -88,15 +88,16 @@ var resulthtml = mapSurvey({
 
 $(document).ready(function() {
 	$("#content").append(resulthtml);
+	$('#content').trigger("create");
 });
 
 //document.getElementById("content")
 
 function mapSurvey(survey) {
-	return 	"<h1>" + survey.title + "</h1>" +
+	return 	"<form><h1>" + survey.title + "</h1>" +
 		survey.groups.map(mapGroup).reduce(function (prev, current) {
 			return prev.concat(current);
-		});
+		}) + "<button type='submit' value='Verstuur' /> </form>";
 }
 
 function mapGroup(group) {
@@ -143,8 +144,8 @@ function dateTemplate(question) {
 function checkboxlistTemplate(question) {
 	var optionshtml = question.options.map(
 		function (option) {
-			return "<input name='" + question.id + "' type='checkbox' />" +
-				"<label>" + option.value + "</label><br>";
+			return "<input id='" + option.value + "' name='" + question.id + "' type='checkbox' />" +
+				"<label for='" + option.value + "'>" + option.value + "</label>";
 		}
 	).reduce(
 		function (prev, current) {
@@ -152,15 +153,20 @@ function checkboxlistTemplate(question) {
 		}
 	);
 
-	return 	"<div>" + optionshtml + "</div>";
+	console.log(optionshtml);
+	return 	"<div data-role='fieldcontain'>" +
+			"	<fieldset data-role='controlgroup'>" +
+					optionshtml +
+			"	</fieldset>" +
+			"</div>";
 }
 
 
 function radiobuttonlistTemplate(question) {
 	var optionshtml = question.options.map(
 		function (option) {
-			return "<input name='" + question.id + "' type='radio' />" +
-				"<label>" + option.value + "</label><br>";
+			return "<input id='" + option.value + "' name='" + question.id + "' type='radio' />" + //TODO: id should be unique
+				"<label for='" + option.value + "'>" + option.value + "</label>";
 		}
 	).reduce(
 		function (prev, current) {
@@ -168,6 +174,10 @@ function radiobuttonlistTemplate(question) {
 		}
 	);
 
-	return 	"<div>" + optionshtml + "</div>";
+	return 	"<div data-role='fieldcontain'>" +
+		"	<fieldset data-role='controlgroup'>" +
+		optionshtml +
+		"	</fieldset>" +
+		"</div>";
 }
 
