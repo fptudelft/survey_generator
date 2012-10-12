@@ -1,31 +1,31 @@
 {
-	"question block": {
-		"question": {
-			"id": "xxxx"
-			"label": "xxxxxxxx"
-			"type": (	
-				"text": "blabla", 
-				"multi select": {
-					"options": [
-						{
-							"value": "mozart"
-						},
-						{
-							"value": "bach"
-						}
-					]
-				},
-				"single select": {
-					"options": [
-						{
-							"value": "mozart"
-						},
-						{
-							"value": "bach"
-						}
-					]
-				}
-			)			
-		}		
-	}
+	"title": "xxx",
+	"group":{
+	    "group name": "xxx",
+	    "questions": [
+            "question": {
+                 "id":"xxxx",
+                 "label":"xxxxxxxx",
+                 "type":{ 
+                    "number": {"min": 0, "max": 1}, 
+                    "text": "blabla",
+                    "large text" : "blabla",
+                    "multi select":{
+                        "options":[{
+                            "value":"mozart"
+                        }, {
+                            "value":"bach"
+                        }]
+                    },
+                    "single select":{
+                       "options":[{
+                            "value":"mozart"
+                        }, {
+                            "value":"bach"
+                        }]
+                    }
+                }
+            }
+        ]       
+    }
 }
