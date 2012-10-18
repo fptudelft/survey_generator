@@ -74,6 +74,15 @@ exports.start = function () {
     }
 
     /**
+     * Process a POST of answers for a given survey.
+     * @param request
+     * @param response
+     */
+    function processAnswers(request, response) {
+        // TODO: implement
+    }
+
+    /**
      * Router for the application, handles calling the methods for each API function
      * @param request
      * @param response
@@ -85,12 +94,31 @@ exports.start = function () {
                 break;
             case "survey":
                 showSurvey(request.url, response);
+                break;
+            case "answers":
+                processAnswers(request, response);
+                break;
             case "/favicon.ico":
                 break;
             default:
                 produceIndex(response);
                 break;
         }
+
+        test_schema_validation();
+    }
+
+    function test_schema_validation() {
+        object = {
+            "id": "1234",
+            "answers": [
+                {
+                    "id": "group_questionid",
+                    "answer": "foo"
+                }
+            ]
+        };
+        console.log(require("./lib/json-schema").validate(object, require("./survey_schemas.js").survey_entry_schema).errors.length);
     }
 
     // Start the server and print some helpful information to console
