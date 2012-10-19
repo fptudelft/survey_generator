@@ -18,6 +18,8 @@ exports.start = function () {
             case "test":
                 showTestPage(response);
                 break;
+            default:
+                response.end("\n");
         }
     }
 
@@ -30,17 +32,17 @@ exports.start = function () {
         return url.split(/\?|\//)[1];
     }
 
+
     /**
      * Produces a list of surveys that are available to the client
      * @param response
      */
     function showSurveyIndex(response) {
-        client.query('SELECT id, title FROM surveys', function (error, rows, fields) {
-            if (error) {
+        client.query('SELECT id, title FROM surveys', function (error, rows) {
+            if (error)
                 throw error;
-            }
-
-            response.end(JSON.stringify(rows));
+            else
+                response.end(JSON.stringify(rows));
         });
     }
 
@@ -65,8 +67,8 @@ exports.start = function () {
                     response.end(error.toString());
                 else
                     response.end(JSON.stringify({
-                        "title" : rows[0]['title'],
-                        "groups": createGroupArray(rows)
+                        "title":rows[0]['title'],
+                        "groups":createGroupArray(rows)
                     }));
             });
     }
@@ -100,9 +102,9 @@ exports.start = function () {
     }
 
     /**
-     * Creates an array of group objects.
+     * Creates an array of group-representing anonymous objects.
      * @param data
-     * @return {*}
+     * @return [Group]
      */
     function createGroupArray(data) {
         return data.reduce(function (previous, current) {
@@ -126,7 +128,7 @@ exports.start = function () {
             post_data += input.toString();
         });
         request.on('end', function () {
-            response.end(JSON.stringify(storeAnswers(getAnswersData(post_data))));
+            response.end(JSON.stringify(storeAnswers(parseRequestPostBody(post_data))));
         });
     }
 
@@ -135,7 +137,7 @@ exports.start = function () {
      * @param post_string
      * @return {*}
      */
-    function getAnswersData(post_string) {
+    function parseRequestPostBody(post_string) {
         return JSON.parse(require('querystring').parse(post_string).data);
     }
 
@@ -158,9 +160,7 @@ exports.start = function () {
             return {success:false, errors:validateAnswers(answer_object).errors};
         } else {
             return {
-                success:insertAnswers(answer_object).reduce(function (previous, current) {
-                    return previous && current;
-                }, true)
+                success:insertAnswers(answer_object)
             }
         }
     }
@@ -168,20 +168,22 @@ exports.start = function () {
     /**
      * Performs the database insertion
      * @param answer_object
-     * @return {*}
+     * @return bool
      */
     function insertAnswers(answer_object) {
         return extractAnswerValues(answer_object).map(function (answer_value) {
-            client.query("INSERT INTO answers (question_id, group_id, answer) VALUES (?,?,?)", answer_value);
-            // TODO: Perform error handling
+            client.query("INSERT INTO answers (question_id, group_id, answer) VALUES (?,?,?)", answer_value, function (err) {
+                // TODO: Rewrite the method to output the error
+                console.log(err);
+            });
             return true;
-        });
+        }).reduce(function(previous, current) {return previous && current; }, true);
     }
 
     /**
-     *
+     * Extract the answer values from the posted JSON object in a format used by our MySQL adapter.
      * @param answer_object
-     * @return {*}
+     * @return [[a, a, b]]
      */
     function extractAnswerValues(answer_object) {
         return answer_object['answers'].map(function (answer) {
