@@ -1,6 +1,11 @@
 /*global viewmodel */
 
-var survey_viewmodel;
+$(document).ready(function() {
+//	$("#content").append(resulthtml);
+//	$('#content').trigger("create");
+
+	ko.applyBindings(ko.mapping.fromJS(plainJSON));
+});
 
 $(document).bind("mobileinit", function () {
 	$.mobile.allowCrossDomainPages = true;
@@ -20,20 +25,16 @@ function loadSurveyApp() {
 	}
 }
 
-function createViewModel(survey) {
-	survey_viewmodel = ko.mapping.fromJS(survey);
-	console.log(survey_viewmodel);
-}
-
 function requestSurvey(survey_id) {
 	$.ajax({
-		"url": "127.0.0.0:10001/survey/" + survey_id,
+		"url": "127.0.0.1:3000/survey/" + survey_id,
 		"type": "GET",
 		"dataType": "json",
 		"success": function (response) {
 			//window.localStorage.getItem("survey").value = response;
 		},
 		"error": function (jqxhr, status, error) {
+
 			console.log("Try to get survey from local cache.");
 		},
 		"complete": function (){
@@ -44,8 +45,9 @@ function requestSurvey(survey_id) {
 
 function submitSurvey(survey) {
 	$.ajax({
-		"url": "127.0.0.0:10001/completed_survey",
+		"url": "127.0.0.1:3000/completed_survey",
 		"type": "POST",
+		"dataType": "JSON",
 		"data": survey,
 		"success": function (response, status) {
 			console.log("Survey submitted.");
@@ -59,47 +61,77 @@ function submitSurvey(survey) {
 	});
 }
 
-//$(function() {
-//
-//	// Temporarily include the dataset in this file to prevent CORS issues when opening index.html in a local browser
-//	var input_data = {
-//	   "question block":{
-//	      "question":{
-//	         "id":"xxxx",
-//	         "label":"xxxxxxxx",
-//	         "type":{
-//	            "text":"blabla",
-//	            "multi select":{
-//	               "options":[
-//	                  {
-//	                     "value":"mozart"
-//	                  },
-//	                  {
-//	                     "value":"bach"
-//	                  }
-//	               ]
-//	            },
-//	            "single select":{
-//	               "options":[
-//	                  {
-//	                     "value":"mozart"
-//	                  },
-//	                  {
-//	                     "value":"bach"
-//	                  }
-//	               ]
-//	            }
-//	         }
-//	      }
-//	   }
-//	};
-//
-//	console.log(input_data);
-//});
+var plainJSON = {
+	"title": "Title of this survey...",
+	"groups": [
+		{
+			"group name": "g1",
+			"questions": [
+				{
+					"id":"q1",
+					"label":"vraag 1: number?",
+					"type": "number",
+					"value": "",
+					"min": 0,
+					"max": 100
 
-//
-//function mapSurvey2Observable(survey_dictionary) {
-//	return survey_dictionary.map(function ($) {
-//		return $.map()
-//	})
-//}
+				},
+				{
+					"id":"q2",
+					"label": "vraag 2: text?",
+					"type": "text",
+					"value": "vul hier je waarde in",
+					"max": ""
+
+				},
+				{
+					"id":"2b",
+					"label": "vraag 2: date?",
+					"type": "date",
+					"value": ""
+				},
+				{
+					"id":"q3",
+					"label": "vraag 3: grote text:) ?",
+					"type": "large text",
+					"value": "vul hier je waarde in",
+					"max": 300
+				}
+			]
+		},
+		{
+			"group name": "g2",
+			"questions": [
+				{
+					"id":"q4",
+					"label": "vraag 4: multi select ?",
+					"type": "multi select",
+					"value": "",
+					"options": [
+						{
+							"value":"mozart"
+						},
+						{
+							"value":"bach"
+						}
+					]
+				},
+				{
+					"id":"q5",
+					"label": "vraag 5: single select ?",
+					"type": "single select",
+					"value": "",
+					"options":[
+						{
+							"value":"mozart"
+						},
+						{
+							"value":"bach"
+						}
+					]
+
+				}
+			]
+		}
+	]
+};

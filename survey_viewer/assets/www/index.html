@@ -28,39 +28,39 @@
 					<div data-bind="foreach: questions">
 						<h3 data-bind="text: label"></h3>
 
-						<!-- ko if: type[0]==="text" -->
-						<input type="text" data-bind="value: type[1].value"/>
+						<!-- ko if: ko.mapping.toJS(type)==="text" -->
+						<input type="text" data-bind="value: value"/>
 						<!-- /ko -->
 
-						<!-- ko if: type[0]==="large text" -->
-						<textarea data-bind="value: type[1].value"></textarea>
+						<!-- ko if: ko.mapping.toJS(type)==="large text" -->
+						<textarea data-bind="value: value"></textarea>
 						<!-- /ko -->
 
-						<!-- ko if: type[0]==="number" -->
-						<input type="number" data-bind="value: type[1].value + " />
+						<!-- ko if: ko.mapping.toJS(type)==="number" -->
+						<input type="number" data-bind="value: value" />
 						<!-- /ko -->
 
-						<!-- ko if: type[0]==="date" -->
-						<input type="date" data-bind="value: type[1].value" />
+						<!-- ko if: ko.mapping.toJS(type)==="date" -->
+						<input type="date" data-bind="value: value" />
 						<!-- /ko -->
 
-						<!-- ko if: type[0]==="multi select" -->
+						<!-- ko if: ko.mapping.toJS(type)==="multi select" -->
 						<div data-role="fieldcontain">
 							<fieldset data-role="controlgroup">
-								<!-- ko foreach: type[1].options -->
-								<input data-bind="attr: { 'id': value, 'name': 'xxxx' }" type="checkbox" />
-								<label data-bind="attr: { 'for': 'xxxx', 'value': value }"></label>
+								<!-- ko foreach: options -->
+								<input data-bind="attr: { 'id': 'check-' + value, 'name': 'check' }" type="checkbox" />
+								<label data-bind="attr: { 'for': 'check-' + value, 'value': value }"></label>
 								<!-- /ko -->
 							</fieldset>
 						</div>
 						<!-- /ko -->
 
-						<!-- ko if: type[0]==="single select" -->
+						<!-- ko if: ko.mapping.toJS(type)==="single select" -->
 						<div data-role="fieldcontain">
 							<fieldset data-role="controlgroup">
-								<!-- ko foreach: type[1].options -->
-								<input data-bind="attr: { 'id': value, 'name': 'xxxx' }" type="radio" />
-								<label data-bind="attr: { 'for': 'xxxx', 'value': value }"></label>
+								<!-- ko foreach: options -->
+								<input data-bind="attr: { 'id': 'radio-' + value, 'name': 'radio' }" type="radio" />
+								<label data-bind="attr: { 'for': 'radio-' + value, 'value': value }"></label>
 								<!-- /ko -->
 							</fieldset>
 						</div>
