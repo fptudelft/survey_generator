@@ -1,6 +1,28 @@
 exports.start = function () {
     /**
-     * Stub functional url cleaner, removes any trailing arguments for routing purposes
+     * Router for the application, handles calling the methods for each API function
+     * @param request
+     * @param response
+     */
+    function onRequest(request, response) {
+        switch (routingPath(request.url)) {
+            case "surveys":
+                showSurveyIndex(response);
+                break;
+            case "survey":
+                showSingleSurvey(request.url.split('/')[2], response);
+                break;
+            case "completed_survey":
+                processAnswers(request, response);
+                break;
+            case "test":
+                showTestPage(response);
+                break;
+        }
+    }
+
+    /**
+     * Stub of a functional url cleaner, removes any trailing arguments for routing purposes
      * @param url
      * @return {*}
      */
@@ -9,28 +31,7 @@ exports.start = function () {
     }
 
     /**
-     * Write the header to our response and returns the response for easy chaining
-     * @param type
-     * @param response
-     * @return {*}
-     */
-    function writeHeader(type, response) {
-        response.writeHead(200, {
-            'Content-Type':type
-        });
-        return response;
-    }
-
-    /**
-     * Produce a friendly index page for the server
-     * @param response
-     */
-    function produceIndex(response) {
-        writeHeader('text/plain', response).end('Hello World\n');
-    }
-
-    /**
-     * Produce a list of surveys that are available to the client
+     * Produces a list of surveys that are available to the client
      * @param response
      */
     function showSurveyIndex(response) {
@@ -44,31 +45,37 @@ exports.start = function () {
     }
 
     /**
-     * Renders the JSON of a requested survey, if found and accessible
-     * @param url
+     * Renders the JSON of a requested survey by fetching the data from MySQL and building an hash step by step.
+     * @param id
      * @param response
      */
-    function showSurvey(id, response) {
-        // TODO, implement correctly in a neat way
-        client.query("SELECT surveys.title as title, groups.id as group_id, questions.id as question_id, questions.label, questions.type FROM surveys \
-        left join groups \
-        on surveys.id = groups.survey_id \
-        left join questions \
-        on groups.id = questions.group_id \
-        where surveys.id=?", [id], function (error, rows) {
-            if (error)
-                response.end(error.toString());
-            else
-            response.end(JSON.stringify(createGroupArray(rows)));
-//                return {
-//                    title: rows[0].title,
-//                    groups: rows.reduce(function(current, previous){
-//
-//                    }, [])
-//                }
-        });
+    function showSingleSurvey(id, response) {
+        client.query("\
+            SELECT surveys.title as title, \
+                groups.id as group_id, \
+                questions.id as question_id, questions.label, questions.type \
+            FROM surveys \
+            LEFT JOIN groups \
+                ON surveys.id = groups.survey_id \
+            LEFT JOIN questions \
+                ON groups.id = questions.group_id \
+            WHERE surveys.id = ?", [id],
+            function (error, rows) {
+                if (error)
+                    response.end(error.toString());
+                else
+                    response.end(JSON.stringify({
+                        "title" : rows[0]['title'],
+                        "groups": createGroupArray(rows)
+                    }));
+            });
     }
 
+    /**
+     * Initializes an hash containing group_id: {"group name": name, answers:[]} for easy filling in later.
+     * @param data
+     * @return {*}
+     */
     function initializeGroupHash(data) {
         return data.reduce(function (previous, current) {
             previous[current['group_id']] = {"group name":current['group_id'], "answers":[]};
@@ -76,6 +83,11 @@ exports.start = function () {
         }, {});
     }
 
+    /**
+     * Fills an empty group hash with the questions retrieved from MySQL
+     * @param data
+     * @return {*}
+     */
     function createGroupHash(data) {
         return data.reduce(function (previous, current) {
             previous[current["group_id"]]['answers'].push({
@@ -87,6 +99,11 @@ exports.start = function () {
         }, initializeGroupHash(data));
     }
 
+    /**
+     * Creates an array of group objects.
+     * @param data
+     * @return {*}
+     */
     function createGroupArray(data) {
         return data.reduce(function (previous, current) {
             if (previous.indexOf(current['group_id']) == -1) {
@@ -98,9 +115,8 @@ exports.start = function () {
             });
     }
 
-
     /**
-     * Process a POST of answers for a given survey.
+     * Processes a POST request of answers for a given survey.
      * @param request
      * @param response
      */
@@ -156,12 +172,17 @@ exports.start = function () {
      */
     function insertAnswers(answer_object) {
         return extractAnswerValues(answer_object).map(function (answer_value) {
-            // TODO: Perform error handling
             client.query("INSERT INTO answers (question_id, group_id, answer) VALUES (?,?,?)", answer_value);
+            // TODO: Perform error handling
             return true;
         });
     }
 
+    /**
+     *
+     * @param answer_object
+     * @return {*}
+     */
     function extractAnswerValues(answer_object) {
         return answer_object['answers'].map(function (answer) {
             return [answer.id.split('_')[0], answer.id.split('_')[1], answer.answer];
@@ -169,35 +190,10 @@ exports.start = function () {
     }
 
     /**
-     * Router for the application, handles calling the methods for each API function
-     * @param request
+     * Displays a test page for server requests.
      * @param response
      */
-    function onRequest(request, response) {
-        switch (routingPath(request.url)) {
-            case "favicon.ico":
-                break;
-            case "surveys":
-                showSurveyIndex(response);
-                break;
-            case "survey":
-                showSurvey(request.url.split('/')[2], response);
-                break;
-            case "answers":
-                processAnswers(request, response);
-                break;
-            case "test":
-                showTest(response);
-                break;
-            default:
-                produceIndex(response);
-                break;
-        }
-
-//        test_schema_validation();
-    }
-
-    function showTest(response) {
+    function showTestPage(response) {
         require('fs').readFile('./test.html', function (error, content) {
             if (error) {
                 response.writeHead(500);
@@ -215,6 +211,6 @@ exports.start = function () {
     console.log('Server running at http://127.0.0.1:3000/');
 
     // Connect to MySQL
-    var client = require('mysql').createClient({user:'survey_server', password:"foobar"});
+    var client = require('mysql').createClient({user:'survey_server', password:"foo"});
     client.query('USE survey_server');
 };
