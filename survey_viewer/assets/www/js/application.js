@@ -1,3 +1,7 @@
+/*global viewmodel */
+
+var survey_viewmodel;
+
 $( document ).bind( "mobileinit", function() {
     $.mobile.allowCrossDomainPages = true;
 	$.mobile.phonegapNavigationEnabled = true;
@@ -41,3 +45,27 @@ $(function() {
 	
 	console.log(input_data);
 });
+/*
+function loadSurveyApp() {
+	if (window.localStorage["survey"] === undefined) {
+		var default_settings = {
+			"settings": {
+				"key": "" //get from input or something or load from file
+			}
+		};
+
+		window.localStorage.put("survey", default_settings);
+
+
+	}
+	survey_viewmodel = requestSurvey(window.localStorage["survey"]["settings"]["key"]);
+}
+
+
+function requestSurvey() {
+	var req = new XMLHttpRequest();
+	req.url = "survey/" + window.localStorage["survey"]["settings"]["key"];
+
+	request.close();
+}
+*/

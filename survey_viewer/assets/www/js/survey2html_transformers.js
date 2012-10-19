@@ -10,7 +10,7 @@ function appendHTML(append_monad) {
 }
 */
 
-var resulthtml = mapSurvey({
+var plainJSON = {
 	"title": "Title of this survey...",
 	"groups": [
 		{
@@ -57,6 +57,7 @@ var resulthtml = mapSurvey({
 					"id":"q4",
 					"label": "vraag 4: multi select ?",
 					"type": ["multi select", {
+						"value": "",
 						"options": [
 							{
 								"value":"mozart"
@@ -71,6 +72,7 @@ var resulthtml = mapSurvey({
 					"id":"q5",
 					"label": "vraag 5: single select ?",
 					"type": ["single select", {
+						"value": "",
 						"options":[
 							{
 								"value":"mozart"
@@ -84,7 +86,10 @@ var resulthtml = mapSurvey({
 			]
 		}
 	]
-});
+};
+
+var viewmodel = ko.mapping.fromJS(plainJSON);
+var resulthtml = mapSurvey(plainJSON);
 
 $(document).ready(function() {
 	$("#content").append(resulthtml);
@@ -126,7 +131,7 @@ function mapQuestion(question) {
 }
 
 function textTemplate(question) {
-	return "<input type='text'>" + question.value + "</input>";
+	return "<input type='text' data-bind="viewmodel:question.value">" + question.value + "</input>";
 }
 
 function largetextTemplate(question) {
@@ -134,7 +139,7 @@ function largetextTemplate(question) {
 }
 
 function numberTemplate(question) {
-	return "<input type='number'>" + question.value + "</input>";
+	return "<input type='number' >" + question.value + "</input>";
 }
 
 function dateTemplate(question) {
