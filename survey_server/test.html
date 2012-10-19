@@ -85,7 +85,7 @@
     };
 
     var survey_answers = {
-        "id":"surveyid",
+        "id":"1",
         "answers":[
             {
                 "id":"groupid_questionid",
@@ -94,8 +94,8 @@
         ]
     };
     $(function () {
-        $.post("/answers", {data:JSON.stringify(survey_answers)}, function (error, data) {
-            $('#output').append(error.toString() + data.toString());
+        $.post("/completed_survey", {data:JSON.stringify(survey_answers)}, function (data) {
+            $('#output').append(data.toString());
         });
     });
 </script>
