@@ -3,3 +3,5 @@
 *.metadata
 /bin
 *~
+/survey_viewer/assets/www/.idea
+/survey_viewer/bin
