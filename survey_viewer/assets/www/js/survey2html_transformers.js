@@ -88,50 +88,52 @@ var plainJSON = {
 	]
 };
 
-var viewmodel = ko.mapping.fromJS(plainJSON);
-var resulthtml = mapSurvey(plainJSON);
+//var viewmodel = ko.mapping.fromJS(plainJSON);
+//console.log(viewmodel);
+//var resulthtml = mapSurvey(plainJSON);
 
 $(document).ready(function() {
-	$("#content").append(resulthtml);
-	$('#content').trigger("create");
+//	$("#content").append(resulthtml);
+//	$('#content').trigger("create");
+
+	ko.applyBindings(ko.mapping.fromJS(plainJSON));
+
 });
 
 //document.getElementById("content")
 
 function mapSurvey(survey) {
 	return 	"<form><h1>" + survey.title + "</h1>" +
-		survey.groups.map(mapGroup).reduce(function (prev, current) {
-			return prev.concat(current);
-		}) + "<button type='submit' value='Verstuur' /> </form>";
-}
+		survey.groups.map(function (group) {
+				return "<div>" + group.questions.map(function (question) {
+					var questiontext = "<h2>" + question.label + "</h2>";
 
-function mapGroup(group) {
-	return "<div>" + group.questions.map(mapQuestion).reduce(function (prev, current) {
-		return prev.concat(current);
-	}) + "</div>";
-}
-
-function mapQuestion(question) {
-	var questiontext = "<h2>" + question.label + "</h2>";
-
-	switch (question.type[0]) {
-		case "text":
-			return questiontext.concat(textTemplate(question.type[1]));
-		case "large text":
-			return questiontext.concat(largetextTemplate(question.type[1]));
-		case "number":
-			return questiontext.concat(numberTemplate(question.type[1]));
-		case "date":
-			return questiontext.concat(dateTemplate(question.type[1]));
-		case "multi select":
-			return questiontext.concat(checkboxlistTemplate(question.type[1]));
-		case "single select":
-			return questiontext.concat(radiobuttonlistTemplate(question.type[1]));
-	}
+					switch (question.type[0]) {
+						case "text":
+							return questiontext.concat(textTemplate(question.type[1]));
+						case "large text":
+							return questiontext.concat(largetextTemplate(question.type[1]));
+						case "number":
+							return questiontext.concat(numberTemplate(question.type[1]));
+						case "date":
+							return questiontext.concat(dateTemplate(question.type[1]));
+						case "multi select":
+							return questiontext.concat(checkboxlistTemplate(question.type[1]));
+						case "single select":
+							return questiontext.concat(radiobuttonlistTemplate(question.type[1]));
+					}
+				}).reduce(function (prev, current) {
+						return prev.concat(current);
+					}) + "</div>";
+			}
+		).reduce(function (prev, current) {
+				return prev.concat(current);
+			}) + "<button type='submit' value='Verstuur' /> </form>";
 }
 
 function textTemplate(question) {
-	return "<input type='text' data-bind="viewmodel:question.value">" + question.value + "</input>";
+
+	return "<input type='text' data-bind='viewmodel:question.value'/>";
 }
 
 function largetextTemplate(question) {
@@ -186,3 +188,43 @@ function radiobuttonlistTemplate(question) {
 		"</div>";
 }
 
+
+//	return "<form><h1 data-bind='text: title'></h1>" +
+//		"<div data-bind='foreach: groups'>" +
+//			"<h2 data-bind='text: name'></h2>" +
+//			"<div data-bind='foreach: questions'>" +
+//				"<h3 data-bind='text: label'></h3>" +
+//
+//				"<!-- ko if: type[0]=='text' -->" +
+//				"<input type='text' data-bind='value: type[1].value'/>" +
+//				"<!-- /ko -->" +
+//
+//				"<!-- ko if: type[0]=='large text' -->" +
+//				"<textarea data-bind='value: type[1].value'></textarea>" +
+//				"<!-- /ko -->" +
+//
+//				"<!-- ko if: type[0]=='number' -->" +
+//				"<input type='number' data-bind='value: type[1].value + ' />" +
+//				"<!-- /ko -->" +
+//
+//				"<!-- ko if: type[0]=='date' -->" +
+//				"<input type='date' data-bind='value: type[1].value' />" +
+//				"<!-- /ko -->" +
+///*
+//				"<!-- ko if: type[0]=='multi select' -->" +
+//				"<div data-role='fieldcontain'>" +
+//					"<fieldset data-role='controlgroup'>" +
+//						"<!-- ko foreach: type[1].options -->" +
+//						"<input data-bind=\"attr: { 'id': value, 'name': 'xxxx' }\" type='checkbox' />" +
+//						"<label data-bind=\"attr: { 'for': 'xxxx', 'value': value }\"></label>" +
+//						"<!-- /ko -->" +
+//					"</fieldset>" +
+//				"</div>" +
+//				"<!-- /ko -->" +
+//*/
+//
+//
+//			"</div>" +
+//		"</div>" +
+//		"</form>";
+//
