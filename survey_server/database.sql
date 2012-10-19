@@ -24,6 +24,22 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `survey_server` /*!40100 DEFAULT CHARAC
 USE `survey_server`;
 
 --
+-- Table structure for table `answers`
+--
+
+DROP TABLE IF EXISTS `answers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `answers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `question_id` varchar(255) DEFAULT NULL,
+  `group_id` varchar(255) DEFAULT NULL,
+  `answer` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `groups`
 --
 
@@ -76,4 +92,4 @@ CREATE TABLE `surveys` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-10-18 22:02:15
+-- Dump completed on 2012-10-19 13:02:54
