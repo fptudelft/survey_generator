@@ -50,7 +50,54 @@ exports.start = function () {
      */
     function showSurvey(id, response) {
         // TODO, implement correctly in a neat way
+        client.query("SELECT surveys.title as title, groups.id as group_id, questions.id as question_id, questions.label, questions.type FROM surveys \
+        left join groups \
+        on surveys.id = groups.survey_id \
+        left join questions \
+        on groups.id = questions.group_id \
+        where surveys.id=?", [id], function (error, rows) {
+            if (error)
+                response.end(error.toString());
+            else
+            response.end(JSON.stringify(createGroupArray(rows)));
+//                return {
+//                    title: rows[0].title,
+//                    groups: rows.reduce(function(current, previous){
+//
+//                    }, [])
+//                }
+        });
     }
+
+    function initializeGroupHash(data) {
+        return data.reduce(function (previous, current) {
+            previous[current['group_id']] = {"group name":current['group_id'], "answers":[]};
+            return previous;
+        }, {});
+    }
+
+    function createGroupHash(data) {
+        return data.reduce(function (previous, current) {
+            previous[current["group_id"]]['answers'].push({
+                "id":current["group_id"] + "_" + current["question_id"],
+                "label":current["label"],
+                "type":current["type"]
+            });
+            return previous;
+        }, initializeGroupHash(data));
+    }
+
+    function createGroupArray(data) {
+        return data.reduce(function (previous, current) {
+            if (previous.indexOf(current['group_id']) == -1) {
+                return previous.concat([current['group_id']]);
+            } else
+                return previous;
+        }, []).map(function (group_id) {
+                return createGroupHash(data)[group_id];
+            });
+    }
+
 
     /**
      * Process a POST of answers for a given survey.
