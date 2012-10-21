@@ -6,75 +6,73 @@
     <link rel="stylesheet" href="3rd_party/jquery.mobile-1.2.0/jquery.mobile.theme-1.2.0.min.css"/>
     <link rel="stylesheet" href="3rd_party/jquery.mobile-1.2.0/jquery.mobile.structure-1.2.0.min.css"/>
 
-	<script type="text/javascript" charset="utf-8" src="js/Dictionary.js"></script>
-	<script type="text/javascript" charset="utf-8" src="js/cordova-2.1.0.js"></script>
     <script type="text/javascript" charset="utf-8" src="3rd_party/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" charset="utf-8" src="3rd_party/jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="3rd_party/knockout-2.2.0rc.js"></script>
     <script type="text/javascript" charset="utf-8" src="3rd_party/knockout.mapping-latest.min.js"></script>
+
+    <script type="text/javascript" charset="utf-8" src="js/knockout.extensions.js"></script>
     <script type="text/javascript" charset="utf-8" src="js/application.js"></script>
-    <script type="text/javascript" charset="utf-8" src="js/survey2html_transformers.js"></script>
+
+    <!-- apply jquery last because otherwise controls won't work -->
+    <script type="text/javascript" charset="utf-8" src="3rd_party/jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/cordova-2.1.0.js"></script>
 </head>
 <body>
-    <div data-role="page">
+    <div data-role="page" data-theme="c">
         <div data-role="header">
-            <h1>Example Survey</h1>
+            <h1 data-bind="text: title" >No survey found. Displaying possible input types.</h1>
         </div>
 
-        <div id="content" data-role="content">
-
+        <div id="content" data-role="content" data-theme="c" data-content-theme="c">
+            <form>
                 <div data-bind="foreach: groups">
-	                <h2 data-bind="text: name"></h2>
-					<div data-bind="foreach: questions">
-						<h3 data-bind="text: label"></h3>
+                    <div data-role="collapsible" data-collapsed="false" data-inset="false" data-theme="c" data-content-theme="c">
+                        <h2 data-bind="text: name"></h2>
 
-						<!-- ko if: ko.mapping.toJS(type)==="text" -->
-						<input type="text" data-bind="value: value"/>
-						<!-- /ko -->
+                        <div data-bind="foreach: questions">
+                            <h3 data-bind="text: label"></h3>
 
-						<!-- ko if: ko.mapping.toJS(type)==="large text" -->
-						<textarea data-bind="value: value"></textarea>
-						<!-- /ko -->
+                            <!-- ko if: ko.mapping.toJS(type)==="text" -->
+                            <input type="text" data-bind="value: value" class="custom"/>
+                            <!-- /ko -->
 
-						<!-- ko if: ko.mapping.toJS(type)==="number" -->
-						<input type="number" data-bind="value: value" />
-						<!-- /ko -->
+                            <!-- ko if: ko.mapping.toJS(type)==="large text" -->
+                            <textarea data-bind="value: value" class="custom"></textarea>
+                            <!-- /ko -->
 
-						<!-- ko if: ko.mapping.toJS(type)==="date" -->
-						<input type="date" data-bind="value: value" />
-						<!-- /ko -->
+                            <!-- ko if: ko.mapping.toJS(type)==="number" -->
+                            <input type="number" data-bind="value: value" class="custom"/>
+                            <!-- /ko -->
 
-						<!-- ko if: ko.mapping.toJS(type)==="multi select" -->
-						<div data-role="fieldcontain">
-							<fieldset data-role="controlgroup">
-								<!-- ko foreach: options -->
-								<input data-bind="attr: { 'id': 'check-' + value, 'name': 'check' }" type="checkbox" />
-								<label data-bind="attr: { 'for': 'check-' + value, 'value': value }"></label>
-								<!-- /ko -->
-							</fieldset>
-						</div>
-						<!-- /ko -->
+                            <!-- ko if: ko.mapping.toJS(type)==="date" -->
+                            <input type="date" data-bind="value: value" class="custom"/>
+                            <!-- /ko -->
 
-						<!-- ko if: ko.mapping.toJS(type)==="single select" -->
-						<div data-role="fieldcontain">
-							<fieldset data-role="controlgroup">
-								<!-- ko foreach: options -->
-								<input data-bind="attr: { 'id': 'radio-' + value, 'name': 'radio' }" type="radio" />
-								<label data-bind="attr: { 'for': 'radio-' + value, 'value': value }"></label>
-								<!-- /ko -->
-							</fieldset>
-						</div>
-						<!-- /ko -->
+                            <!-- ko if: ko.mapping.toJS(type)==="multi select" -->
+                            <fieldset data-role="controlgroup" data-bind="foreach: options">
+                                <input type="checkbox" name="somegroupnametofix" id="xxx" data-bind="uniqueId: value, checked: $parent.selected, value: value" class="custom" />
+                                <label for="xxx" data-bind="uniqueFor: value"><span data-bind="text: value"></span></label>
+                            </fieldset>
+                            <!-- /ko -->
 
-
-					</div>
+                            <!-- ko if: ko.mapping.toJS(type)==="single select" -->
+                            <fieldset data-role="controlgroup" data-bind="foreach: options">
+                                <input type="radio" name="somegroupnametofixx" id="xx" data-bind="uniqueId: value, checked: $parent.selected, value: value" class="custom" />
+                                <label for="xx" data-bind="uniqueFor: value"><span data-bind="text: value"></span></label>
+                            </fieldset>
+                            <!-- /ko -->
+                        </div>
                 </div>
+
+
+                </div>
+                <button data-theme="c" data-bind="click: function () { return; }">Verzend</button>
             </form>
         </div>
 
 
         <div data-role="footer">
-            <h4>Footer content</h4>
+            <textarea data-bind="text: JSON.stringify(ko.mapping.toJS($root), null, '\t')"/>
         </div>
     </div>
 </body>

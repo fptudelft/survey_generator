@@ -1,9 +1,6 @@
 /*global viewmodel */
 
 $(document).ready(function () {
-//	$("#content").append(resulthtml);
-//	$('#content').trigger("create");
-
     loadSurveyApp();
 });
 
@@ -23,7 +20,9 @@ function loadSurveyApp() {
 //
 //    }
 //        window.localStorage.setItem("survey", default_settings);
-    requestSurvey(1);
+//    requestSurvey(1);
+	ko.applyBindings(ko.mapping.fromJS(examplesurvey));
+
 }
 
 function requestSurvey(survey_id) {
@@ -37,6 +36,7 @@ function requestSurvey(survey_id) {
             ko.applyBindings(ko.mapping.fromJS(response));
         },
         "error":function (jqxhr, status, error) {
+			ko.applyBindings(ko.mapping.fromJS(examplesurvey));
 
             console.log("Try to get survey from local cache.");
         },
@@ -66,11 +66,11 @@ function submitSurvey(survey) {
     ;
 }
 
-var plainJSON = {
+var examplesurvey = {
     "title":"Title of this survey...",
     "groups":[
         {
-            "group name":"g1",
+            "name":"g1",
             "questions":[
                 {
                     "id":"q1",
@@ -105,13 +105,13 @@ var plainJSON = {
             ]
         },
         {
-            "group name":"g2",
+            "name":"g2",
             "questions":[
                 {
                     "id":"q4",
                     "label":"vraag 4: multi select ?",
                     "type":"multi select",
-                    "value":"",
+                    "selected": [],
                     "options":[
                         {
                             "value":"mozart"
@@ -125,7 +125,7 @@ var plainJSON = {
                     "id":"q5",
                     "label":"vraag 5: single select ?",
                     "type":"single select",
-                    "value":"",
+                    "selected": ko.observable("mozart"),
                     "options":[
                         {
                             "value":"mozart"
