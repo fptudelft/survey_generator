@@ -80,7 +80,7 @@ exports.start = function () {
      */
     function initializeGroupHash(data) {
         return data.reduce(function (previous, current) {
-            previous[current['group_id']] = {"group name":current['group_id'], "answers":[]};
+            previous[current['group_id']] = {"name":current['group_id'], "answers":[]};
             return previous;
         }, {});
     }

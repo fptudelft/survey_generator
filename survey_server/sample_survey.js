@@ -2,7 +2,7 @@ exports.survey = {
     "title":"Title of this survey...",
     "groups":[
         {
-            "group name":"g1",
+            "name":"g1",
             "questions":[
                 {
                     "id":"q1",
@@ -39,7 +39,7 @@ exports.survey = {
             ]
         },
         {
-            "group name":"g2",
+            "name":"g2",
             "questions":[
                 {
                     "id":"q4",
