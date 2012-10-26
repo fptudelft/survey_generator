@@ -5,6 +5,8 @@ exports.start = function () {
      * @param response
      */
     function onRequest(request, response) {
+        console.log(request.url);
+
         switch (routingPath(request.url)) {
             case "surveys":
                 showSurveyIndex(response);
@@ -80,7 +82,7 @@ exports.start = function () {
      */
     function initializeGroupHash(data) {
         return data.reduce(function (previous, current) {
-            previous[current['group_id']] = {"name":current['group_id'], "answers":[]};
+            previous[current['group_id']] = {"name":current['group_id'], "questions":[]};
             return previous;
         }, {});
     }
@@ -92,10 +94,11 @@ exports.start = function () {
      */
     function createGroupHash(data) {
         return data.reduce(function (previous, current) {
-            previous[current["group_id"]]['answers'].push({
+            previous[current["group_id"]]['questions'].push({
                 "id":current["group_id"] + "_" + current["question_id"],
                 "label":current["label"],
-                "type":current["type"]
+                "type":current["type"],
+                "value":""
             });
             return previous;
         }, initializeGroupHash(data));
