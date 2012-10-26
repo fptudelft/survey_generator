@@ -55,7 +55,7 @@ exports.start = function () {
      */
     function showSingleSurvey(id, response) {
         client.query("\
-            SELECT surveys.title as title, \
+            SELECT surveys.id as id, surveys.title as title, \
                 groups.id as group_id, \
                 questions.id as question_id, questions.label, questions.type \
             FROM surveys \
@@ -69,6 +69,7 @@ exports.start = function () {
                     response.end(error.toString());
                 else
                     response.end(JSON.stringify({
+                        "id":rows[0]['id'],
                         "title":rows[0]['title'],
                         "groups":createGroupArray(rows)
                     }));
@@ -131,7 +132,15 @@ exports.start = function () {
             post_data += input.toString();
         });
         request.on('end', function () {
-            response.end(JSON.stringify(storeAnswers(parseRequestPostBody(post_data))));
+            console.log("Received post data:", parseRequestPostBody(post_data));
+            var output = storeAnswers(parseRequestPostBody(post_data));
+            if (output.errors) {
+                console.log("Post had " + output.errors.length + " errors");
+                console.log(output.errors);
+            } else {
+                console.log("Successful post.");
+            }
+            response.end(JSON.stringify(output));
         });
     }
 
@@ -177,10 +186,12 @@ exports.start = function () {
         return extractAnswerValues(answer_object).map(function (answer_value) {
             client.query("INSERT INTO answers (question_id, group_id, answer) VALUES (?,?,?)", answer_value, function (err) {
                 // TODO: Rewrite the method to output the error
-                console.log(err);
+                console.log("Error:", err);
             });
             return true;
-        }).reduce(function(previous, current) {return previous && current; }, true);
+        }).reduce(function (previous, current) {
+                return previous && current;
+            }, true);
     }
 
     /**

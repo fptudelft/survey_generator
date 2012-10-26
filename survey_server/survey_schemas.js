@@ -4,7 +4,7 @@ exports.survey_entry_schema = {
     "additionalProperties":false,
     "properties":{
         "id":{
-            "type":"string",
+            "type":["integer","string"],
             "description":"Survey identifier",
             "required":true,
             "format":/\w+/
@@ -30,7 +30,6 @@ exports.survey_entry_schema = {
                     }
                 }
             }
-
         }
     }
 };
