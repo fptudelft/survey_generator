@@ -31,7 +31,7 @@ var server = "192.168.1.101";
 function requestSurvey(survey_id) {
     console.log("Requesting survey " + survey_id);
     $.ajax({
-        "url":"http://"+server+":3000/survey/" + survey_id,
+        "url":"http://" + server + ":3000/survey/" + survey_id,
         "type":"GET",
         "dataType":"json",
         "success":function (response) {
@@ -43,25 +43,28 @@ function requestSurvey(survey_id) {
         "error":function (jqxhr, status, error) {
             console.log("Error");
             console.log(status, error.toString());
-			ko.applyBindings(ko.mapping.fromJS(examplesurvey));
-//            console.log("Try to get survey from local cache.");
+            console.log("Try to get survey from local cache.");
+            ko.applyBindings(ko.mapping.fromJS(examplesurvey));
         },
         "complete":function () {
-//            console.log("show new empty survey and/or notification of success");
+            console.log("show new empty survey and/or notification of success");
         }
     });
 }
 
-function submitSurvey(survey) {
+function postSurvey(survey) {
+    console.log("Submitting survey:");
+    console.log(JSON.stringify(survey));
     $.ajax({
-            "url":"http://"+server+":3000/completed_survey",
+            "url":"http://" + server + ":3000/completed_survey",
             "type":"POST",
             "dataType":"JSON",
-            "data":ko.applyBindings(ko.mapping.toJS(survey)),
+            "data":{data:JSON.stringify(survey)},
             "success":function (response, status) {
                 console.log("Survey submitted.");
             },
             "error":function (jqxhr, status, error) {
+                console.log(status, error.toString());
                 console.log("Store completed survey in local cache.");
             },
             "complete":function () {
@@ -71,10 +74,46 @@ function submitSurvey(survey) {
     );
 }
 
-function submitButton() {
-    //TODO: process the form data into a survey submission. KnockoutJS perhaps has tools for this as well?
-    var survey = {};
-    submitSurvey(survey);
+/**
+ * Handle the submit button of our survey by first transforming the data of our KO object into another format before submitting
+ * @param survey
+ */
+function submitSurvey(survey) {
+    postSurvey(transformSurveyToAnswers(survey));
+}
+
+/**
+ * Transforms a survey to an object in the format of the answers JSON schema
+ * @param survey
+ * @return {Object}
+ */
+function transformSurveyToAnswers(survey) {
+    return {
+        id:survey['id'],
+        answers:transformGroupsToAnswers(survey['groups'])
+    }
+}
+
+/**
+ * Transforms a group of answers to an array of objects with a question id and answer value.
+ * @param groups
+ * @return {Object}
+ */
+function transformGroupsToAnswers(groups) {
+    return groups.map(function(group) {
+        return group['questions'].map(transformQuestionToAnswer);
+    }).reduce(mapConcat, []);
+}
+
+function transformQuestionToAnswer(question) {
+    return {
+        "id": question['id'],
+        "answer":question['value']
+    };
+}
+
+function mapConcat(previous, current) {
+    return previous.concat(current)
 }
 
 var examplesurvey = {
@@ -122,7 +161,7 @@ var examplesurvey = {
                     "id":"q4",
                     "label":"vraag 4: multi select ?",
                     "type":"multi select",
-                    "selected": [],
+                    "selected":[],
                     "options":[
                         {
                             "value":"mozart"
@@ -136,7 +175,7 @@ var examplesurvey = {
                     "id":"q5",
                     "label":"vraag 5: single select ?",
                     "type":"single select",
-                    "selected": ko.observable("mozart"),
+                    "selected":ko.observable("mozart"),
                     "options":[
                         {
                             "value":"mozart"
