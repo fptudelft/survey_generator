@@ -20,35 +20,41 @@ function loadSurveyApp() {
 //
 //    }
 //        window.localStorage.setItem("survey", default_settings);
-//    requestSurvey(1);
-	ko.applyBindings(ko.mapping.fromJS(examplesurvey));
-
+    console.log("Requesting survey");
+    requestSurvey(1);
+//	ko.applyBindings(ko.mapping.fromJS(examplesurvey));
 }
 
+//var server = "10.0.2.2";
+var server = "192.168.1.101";
+
 function requestSurvey(survey_id) {
+    console.log("Requesting survey " + survey_id);
     $.ajax({
-        "url":"127.0.0.1:3000/survey/" + survey_id,
+        "url":"http://"+server+":3000/survey/" + survey_id,
         "type":"GET",
         "dataType":"json",
         "success":function (response) {
+            console.log("Success");
             console.log(response);
             //window.localStorage.getItem("survey").value = response;
             ko.applyBindings(ko.mapping.fromJS(response));
         },
         "error":function (jqxhr, status, error) {
+            console.log("Error");
+            console.log(status, error.toString());
 			ko.applyBindings(ko.mapping.fromJS(examplesurvey));
-
-            console.log("Try to get survey from local cache.");
+//            console.log("Try to get survey from local cache.");
         },
         "complete":function () {
-            console.log("show new empty survey and/or notification of success");
+//            console.log("show new empty survey and/or notification of success");
         }
     });
 }
 
 function submitSurvey(survey) {
     $.ajax({
-            "url":"127.0.0.1:3000/completed_survey",
+            "url":"http://"+server+":3000/completed_survey",
             "type":"POST",
             "dataType":"JSON",
             "data":ko.applyBindings(ko.mapping.toJS(survey)),
@@ -62,8 +68,13 @@ function submitSurvey(survey) {
                 console.log("show new empty survey and/or notification of success");
             }
         }
-    )
-    ;
+    );
+}
+
+function submitButton() {
+    //TODO: process the form data into a survey submission. KnockoutJS perhaps has tools for this as well?
+    var survey = {};
+    submitSurvey(survey);
 }
 
 var examplesurvey = {
