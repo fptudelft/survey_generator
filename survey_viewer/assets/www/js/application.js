@@ -79,7 +79,7 @@ function postSurvey(survey) {
  * @param survey
  */
 function submitSurvey(survey) {
-    postSurvey(transformSurveyToAnswers(survey));
+    postSurvey(transformSurveyToAnswers(ko.mapping.toJS(survey)));
 }
 
 /**
