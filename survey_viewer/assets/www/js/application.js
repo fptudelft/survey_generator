@@ -33,7 +33,7 @@ function requestSurvey(survey_id) {
     $.ajax({
         "url":"http://" + server + ":3000/survey/" + survey_id,
         "type":"GET",
-        "dataType":"json",
+        "dataType":"jsonp",
         "success":function (response) {
             console.log("Success");
             console.log(response);
@@ -58,7 +58,7 @@ function postSurvey(survey) {
     $.ajax({
             "url":"http://" + server + ":3000/completed_survey",
             "type":"POST",
-            "dataType":"JSON",
+            "dataType":"jsonp",
             "data":{data:JSON.stringify(survey)},
             "success":function (response, status) {
                 console.log("Survey submitted.");
