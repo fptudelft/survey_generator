@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Survey</title>
+    <link rel="stylesheet" href="3rd_party/jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.css"/>
+    <link rel="stylesheet" href="3rd_party/jquery.mobile-1.2.0/jquery.mobile.theme-1.2.0.min.css"/>
+    <link rel="stylesheet" href="3rd_party/jquery.mobile-1.2.0/jquery.mobile.structure-1.2.0.min.css"/>
+
+    <script type="text/javascript" charset="utf-8" src="3rd_party/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="3rd_party/knockout-2.2.0rc.js"></script>
+    <script type="text/javascript" charset="utf-8" src="3rd_party/knockout.mapping-latest.min.js"></script>
+
+    <script type="text/javascript" charset="utf-8" src="js/knockout.extensions.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/application.js"></script>
+
+    <!-- apply jquery last because otherwise controls won't work -->
+    <script type="text/javascript" charset="utf-8"
+            src="3rd_party/jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/cordova-2.1.0.js"></script>
+</head>
+<body>
+
+<div id="survey" data-role="page" data-theme="c">
+    <div data-role="header">
+        <h1 data-bind="text: title">No survey found. Displaying possible input types.</h1>
+    </div>
+
+    <div id="content" data-role="content" data-theme="c" data-content-theme="c">
+        <form>
+            <div data-bind="foreach: groups">
+                <div data-role="collapsible" data-collapsed="false" data-inset="false" data-theme="c"
+                     data-content-theme="c">
+                    <h2 data-bind="text: name"></h2>
+
+                    <div data-bind="foreach: questions">
+                        <h3 data-bind="text: label"></h3>
+
+                        <!-- ko if: ko.mapping.toJS(type)==="text" -->
+                        <input type="text" data-bind="value: value" class="custom"/>
+                        <!-- /ko -->
+
+                        <!-- ko if: ko.mapping.toJS(type)==="large text" -->
+                        <textarea data-bind="value: value" class="custom"></textarea>
+                        <!-- /ko -->
+
+                        <!-- ko if: ko.mapping.toJS(type)==="number" -->
+                        <input type="number" data-bind="value: value" class="custom"/>
+                        <!-- /ko -->
+
+                        <!-- ko if: ko.mapping.toJS(type)==="date" -->
+                        <input type="date" data-bind="value: value" class="custom"/>
+                        <!-- /ko -->
+
+                        <!-- ko if: ko.mapping.toJS(type)==="multi select" -->
+                        <fieldset data-role="controlgroup" data-bind="foreach: options">
+                            <input type="checkbox" name="somegroupnametofix" id="xxx"
+                                   data-bind="uniqueId: value, checked: $parent.selected, value: value" class="custom"/>
+                            <label for="xxx" data-bind="uniqueFor: value"><span data-bind="text: value"></span></label>
+                        </fieldset>
+                        <!-- /ko -->
+
+                        <!-- ko if: ko.mapping.toJS(type)==="single select" -->
+                        <fieldset data-role="controlgroup" data-bind="foreach: options">
+                            <input type="radio" name="somegroupnametofixx" id="xx"
+                                   data-bind="uniqueId: value, checked: $parent.selected, value: value" class="custom"/>
+                            <label for="xx" data-bind="uniqueFor: value"><span data-bind="text: value"></span></label>
+                        </fieldset>
+                        <!-- /ko -->
+                    </div>
+                </div>
+
+
+            </div>
+            <button data-theme="c" data-bind="click: submitSurvey">Submit</button>
+            <a href="index.html" data-role="button" data-icon="arrow-l" data-ajax="false">Cancel</a>
+        </form>
+    </div>
+
+    <div data-role="footer">
+        <!--
+        KnckoutJS binding debugging output:
+        <textarea data-bind="text: JSON.stringify(ko.mapping.toJS($root), null, '\t')"/>
+        -->
+        <p>
+            Survey Viewer &copy; 2012
+        </p>
+    </div>
+</div>
+</body>
+</html>

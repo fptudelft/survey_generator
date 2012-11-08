@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Survey List</title>
+    <title>Survey</title>
     <link rel="stylesheet" href="3rd_party/jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.css"/>
     <link rel="stylesheet" href="3rd_party/jquery.mobile-1.2.0/jquery.mobile.theme-1.2.0.min.css"/>
     <link rel="stylesheet" href="3rd_party/jquery.mobile-1.2.0/jquery.mobile.structure-1.2.0.min.css"/>
@@ -19,17 +19,19 @@
     <script type="text/javascript" charset="utf-8" src="js/cordova-2.1.0.js"></script>
 </head>
 <body>
-<div id="index" data-role="page" data-theme="c">
+<div id="survey_thanks" data-role="page" data-theme="c">
     <div data-role="header">
-        <h1>Available surveys</h1>
+        <h1 data-bind="text: title">Available surveys</h1>
     </div>
 
-    <div id="surveys" data-role="content" data-theme="c" data-content-theme="c">
-        <ul data-role="listview" data-theme="c" data-bind="foreach: surveys">
-            <li>
-                <a href='#' data-bind="click: surveyHandler"><!--ko text: title--><!--/ko--></a>
-            </li>
-        </ul>
+    <div data-role="content" data-theme="c" data-content-theme="c">
+        <h2>Thanks for your input!</h2>
+
+        <p>Your answers for the survey have been saved for submission.</p>
+
+        <p>
+            <a href="index.html" data-role="button" data-icon="arrow-l" data-ajax="false">Return to the survey list</a>
+        </p>
     </div>
 
     <div data-role="footer">

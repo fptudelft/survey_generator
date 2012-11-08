@@ -1,5 +1,3 @@
-/*global viewmodel */
-
 $(document).ready(function () {
     loadSurveyApp();
 });
@@ -10,32 +8,39 @@ $(document).bind("mobileinit", function () {
 });
 
 function loadSurveyApp() {
-//    if (window.localStorage["survey"] === undefined) {
-//        var default_settings = {
-//            "value":{},
-//            "settings":{
-//                "key":"1" //get from input or something or load from file
-//            }
-//        };
-//
-//    }
-//        window.localStorage.setItem("survey", default_settings);
-    console.log("Requesting survey");
-    requestSurvey(1);
-//	ko.applyBindings(ko.mapping.fromJS(examplesurvey));
+    if (window.location.hash) {
+        requestSurvey(window.location.hash.replace('#', ''));
+    } else {
+        requestSurveyIndex();
+    }
 }
 
 //var server = "10.0.2.2";
 var server = "192.168.1.101";
 
+function requestSurveyIndex() {
+    console.log('Requesting survey index');
+    $.ajax({
+        "url":"http://" + server + ":3000/surveys",
+        "dataType":"jsonp",
+        "success":function (response) {
+            console.log("requestSurveyIndex Success", response);
+            //window.localStorage.getItem("survey").value = response;
+            ko.applyBindings(ko.mapping.fromJS(response));
+        },
+        "error":function (jqxhr, status, error) {
+            console.log("Error", status, error.toString());
+        }
+    });
+}
+
 function requestSurvey(survey_id) {
     console.log("Requesting survey " + survey_id);
     $.ajax({
         "url":"http://" + server + ":3000/survey/" + survey_id,
-        "type":"GET",
         "dataType":"jsonp",
         "success":function (response) {
-            console.log("Success");
+            console.log("requestSurvey Success");
             console.log(response);
             //window.localStorage.getItem("survey").value = response;
             ko.applyBindings(ko.mapping.fromJS(response));
@@ -57,18 +62,16 @@ function postSurvey(survey) {
     console.log(JSON.stringify(survey));
     $.ajax({
             "url":"http://" + server + ":3000/completed_survey",
-            "type":"POST",
             "dataType":"jsonp",
             "data":{data:JSON.stringify(survey)},
             "success":function (response, status) {
                 console.log("Survey submitted.");
+//                $.mobile.changePage('thanks.html');
+                window.location = "thanks.html";
             },
             "error":function (jqxhr, status, error) {
                 console.log(status, error.toString());
                 console.log("Store completed survey in local cache.");
-            },
-            "complete":function () {
-                console.log("show new empty survey and/or notification of success");
             }
         }
     );
@@ -80,6 +83,7 @@ function postSurvey(survey) {
  */
 function submitSurvey(survey) {
     postSurvey(transformSurveyToAnswers(ko.mapping.toJS(survey)));
+    return false;
 }
 
 /**
@@ -100,14 +104,14 @@ function transformSurveyToAnswers(survey) {
  * @return {Object}
  */
 function transformGroupsToAnswers(groups) {
-    return groups.map(function(group) {
+    return groups.map(function (group) {
         return group['questions'].map(transformQuestionToAnswer);
     }).reduce(mapConcat, []);
 }
 
 function transformQuestionToAnswer(question) {
     return {
-        "id": question['id'],
+        "id":question['id'],
         "answer":question['value']
     };
 }
@@ -116,77 +120,13 @@ function mapConcat(previous, current) {
     return previous.concat(current)
 }
 
-var examplesurvey = {
-    "title":"Title of this survey...",
-    "groups":[
-        {
-            "name":"g1",
-            "questions":[
-                {
-                    "id":"q1",
-                    "label":"vraag 1: number?",
-                    "type":"number",
-                    "value":"",
-                    "min":0,
-                    "max":100
-
-                },
-                {
-                    "id":"q2",
-                    "label":"vraag 2: text?",
-                    "type":"text",
-                    "value":"vul hier je waarde in",
-                    "max":""
-
-                },
-                {
-                    "id":"2b",
-                    "label":"vraag 2: date?",
-                    "type":"date",
-                    "value":""
-                },
-                {
-                    "id":"q3",
-                    "label":"vraag 3: grote text:) ?",
-                    "type":"large text",
-                    "value":"vul hier je waarde in",
-                    "max":300
-                }
-            ]
-        },
-        {
-            "name":"g2",
-            "questions":[
-                {
-                    "id":"q4",
-                    "label":"vraag 4: multi select ?",
-                    "type":"multi select",
-                    "selected":[],
-                    "options":[
-                        {
-                            "value":"mozart"
-                        },
-                        {
-                            "value":"bach"
-                        }
-                    ]
-                },
-                {
-                    "id":"q5",
-                    "label":"vraag 5: single select ?",
-                    "type":"single select",
-                    "selected":ko.observable("mozart"),
-                    "options":[
-                        {
-                            "value":"mozart"
-                        },
-                        {
-                            "value":"bach"
-                        }
-                    ]
-
-                }
-            ]
-        }
-    ]
-};
+/**
+ * Handler for clicks on a specific survey on the survey index page
+ * @param survey
+ * @return false
+ */
+function surveyHandler(survey) {
+    // Using window.location instead of $.mobile.pageChange because of the issues with testing on files that are not served by a web server due to the origin being null
+    window.location = 'survey.html#' + survey.id();
+    return false;
+}
