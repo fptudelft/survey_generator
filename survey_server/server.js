@@ -19,7 +19,8 @@ exports.start = function () {
             "survey":showSurvey,
             "completed_survey":processAnswers,
             "test":showTestPage,
-            "favicon.ico":function () {
+            "favicon.ico":function (_, response) {
+                response.end("\n");
             }
         };
     }
@@ -94,7 +95,7 @@ exports.start = function () {
             if (error)
                 throw error;
             else
-                writeJSONPCallback(request, response, rows);
+                writeJSONPCallback(request, response, {"surveys":rows});
         });
     }
 
@@ -129,9 +130,9 @@ exports.start = function () {
             WHERE surveys.id = ?", [id],
             function (error, rows) {
                 if (error)
-                    writeJSONPCallback(request, response, {errors : error});
-                else if(!rows.length)
-                    writeJSONPCallback(request, response, {errors : ["Survey not found"]});
+                    writeJSONPCallback(request, response, {errors:error});
+                else if (!rows.length)
+                    writeJSONPCallback(request, response, {errors:["Survey not found"]});
                 else
                     writeJSONPCallback(request, response, {
                         "id":rows[0]['id'],
