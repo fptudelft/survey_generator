@@ -64,11 +64,11 @@ exports.start = function () {
 
     /**
      * Parses a post string containing JSON and returns a Javascript object
-     * @param post_string
+     * @param query
      * @return {*}
      */
-    function parseRequestPostBody(post_string) {
-        return JSON.parse(require('querystring').parse(post_string).data);
+    function parseRequestPostBody(query) {
+        return JSON.parse(require('querystring').parse(require('url').parse(query)['query'])['data']);
     }
 
     /**
@@ -202,12 +202,12 @@ exports.start = function () {
             post_data += input.toString();
         });
         request.on('end', function () {
-            var output = storeAnswers(parseRequestPostBody(post_data));
+            var output = storeAnswers(parseRequestPostBody(request.url));
             if (output.errors) {
                 console.log("Post had " + output.errors.length + " errors");
                 console.log(output.errors);
             } else {
-                console.log("Successful post.");
+                console.log("Successful submission.");
             }
             writeJSONPCallback(request, response, output);
         });
@@ -244,10 +244,8 @@ exports.start = function () {
      */
     function insertAnswers(answer_object) {
         return extractAnswerValues(answer_object).map(function (answer_value) {
-            client.query("INSERT INTO answers (question_id, group_id, answer) VALUES (?,?,?)", answer_value, function (err) {
-                // TODO: Rewrite the method to output the error
-                console.log("Error:", err);
-            });
+            //TODO: Rewrite the insert query to handle possible errors instead of the current fire-and-forget approach
+            client.query("INSERT INTO answers (question_id, group_id, answer) VALUES (?,?,?)", answer_value);
             return true;
         }).reduce(function (previous, current) {
                 return previous && current;
