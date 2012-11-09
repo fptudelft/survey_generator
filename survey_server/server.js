@@ -155,7 +155,7 @@ exports.start = function () {
     }
 
     /**
-     * Fills an empty group hash with the questions retrieved from MySQL
+     * Fills an empty group hash with the questions retrieved from MySQL for further processing.
      * @param data
      * @return {*}
      */
@@ -172,7 +172,7 @@ exports.start = function () {
     }
 
     /**
-     * Creates an array of group-representing anonymous objects.
+     * Creates an array of group-representing anonymous objects, which will be returned to the client.
      * @param data
      * @return [Group]
      */
@@ -180,8 +180,9 @@ exports.start = function () {
         return data.reduce(function (previous, current) {
             if (previous.indexOf(current['group_id']) == -1) {
                 return previous.concat([current['group_id']]);
-            } else
+            } else {
                 return previous;
+            }
         }, []).map(function (group_id) {
                 return createGroupHash(data)[group_id];
             });
