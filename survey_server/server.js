@@ -197,10 +197,6 @@ exports.start = function () {
      * @param response
      */
     function processAnswers(request, response) {
-        var post_data = '';
-        request.on('data', function (input) {
-            post_data += input.toString();
-        });
         request.on('end', function () {
             var output = storeAnswers(parseRequestPostBody(request.url));
             if (output.errors) {
