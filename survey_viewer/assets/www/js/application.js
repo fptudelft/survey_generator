@@ -15,8 +15,8 @@ function loadSurveyApp() {
     }
 }
 
-//var server = "10.0.2.2";
-var server = "192.168.1.101";
+var server = "10.0.2.2";
+//var server = "192.168.1.101";
 
 function requestSurveyIndex() {
     console.log('Requesting survey index');
